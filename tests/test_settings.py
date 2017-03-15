@@ -1,6 +1,6 @@
 import pytest
 
-from pyramid_restful.settings import APISettings, reload_api_settings
+from pyramid_restful.settings import APISettings, reload_api_settings, api_settings
 from pyramid_restful.pagination import PageNumberPagination, LinkHeaderPagination
 
 
@@ -21,6 +21,8 @@ def test_import_error():
 
 
 def test_reload_api_settings():
+    assert api_settings.default_pagination_class == PageNumberPagination
+
     reload_api_settings(
         {
             'testrestful.default_pagination_class': 'pyramid_restful.pagination.LinkHeaderPagination',
@@ -29,5 +31,4 @@ def test_reload_api_settings():
         'testrestful'
     )
 
-    from pyramid_restful.settings import api_settings
-    api_settings.default_pagination_class == LinkHeaderPagination
+    assert api_settings.default_pagination_class == LinkHeaderPagination
