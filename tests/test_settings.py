@@ -1,7 +1,11 @@
 import pytest
 
-from pyramid_restful.settings import APISettings, reload_api_settings, api_settings
-from pyramid_restful.pagination import PageNumberPagination, LinkHeaderPagination
+from pyramid_restful.settings import APISettings, reload_api_settings, DEFAULTS
+from pyramid_restful.pagination import PageNumberPagination
+
+
+class TestPagination(PageNumberPagination):
+    pass
 
 
 def test_default_settings():
@@ -21,14 +25,16 @@ def test_import_error():
 
 
 def test_reload_api_settings():
-    assert api_settings.default_pagination_class == PageNumberPagination
+    pager = TestPagination()
 
     reload_api_settings(
         {
             'testrestful.default_pagination_class': 'pyramid_restful.pagination.LinkHeaderPagination',
+            'testrestful.page_size': 99,
             'testrestful': 'junk'
         },
         'testrestful'
     )
 
-    assert api_settings.default_pagination_class == LinkHeaderPagination
+    assert pager.page_size == 99
+    reload_api_settings(DEFAULTS)  # reset global settings

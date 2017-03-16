@@ -10,8 +10,6 @@ from sqlalchemy.orm.query import Query
 from pyramid.exceptions import HTTPNotFound
 from pyramid.response import Response
 
-from pyramid_restful.settings import  api_settings
-
 from .utilities import remove_query_param, replace_query_param
 from .base import BasePagination
 
@@ -200,9 +198,21 @@ class PageNumberPagination(BasePagination):
 
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
+
+    page_size can be overridden as class attribute:
+        class MyPager(PageNumberPagination):
+            page_size = 10
     """
 
-    page_size = api_settings.page_size
+    @property
+    def page_size(self):
+        if not hasattr(self, '_page_size'):
+            # make sure we have the most up to date settings
+            # Somebody please come up with something better
+            from pyramid_restful.settings import api_settings
+            self._page_size = api_settings.page_size
+
+        return self._page_size
 
     paginator_class = Paginator
 
